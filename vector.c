@@ -6,9 +6,9 @@
 
 #define VECTOR_INIT_SIZE 8
 
-Vector* create_vector(const size_t size)
+Vector* create_vector(const size_t capacity)
 {
-    assert(size >= 0);
+    assert(capacity >= 0);
 
     Vector* newVector = (Vector*) malloc(sizeof(Vector));
 
@@ -18,7 +18,7 @@ Vector* create_vector(const size_t size)
         return NULL;
     }
 
-    newVector->capacity = (size == 0) ? VECTOR_INIT_SIZE : size;
+    newVector->capacity = (capacity == 0) ? VECTOR_INIT_SIZE : capacity;
     newVector->items = (int*) calloc(newVector->capacity, sizeof(int));
     
     // calloc failed
@@ -28,7 +28,7 @@ Vector* create_vector(const size_t size)
         return NULL;
     }
 
-    newVector->size = size;
+    newVector->size = 0;
     return newVector;
 }
 

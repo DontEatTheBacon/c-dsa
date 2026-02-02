@@ -1,7 +1,9 @@
 #include <stdio.h>
-#include <stddef.h>
+#include <stdlib.h>
 
 #include "container.h"
+
+#define CONTAINER_INIT_CAPACITY 8
 
 Container* create_container(const size_t capacity)
 {
@@ -11,17 +13,52 @@ Container* create_container(const size_t capacity)
         return NULL;
     }
 
-    container->items = (ContainerItem**) calloc(capacity, sizeof(ContainerItem*));
+    container->capacity = capacity == 0 ? CONTAINER_INIT_CAPACITY : capacity;
+
+    container->items = (ContainerItem**) calloc(container->capacity, sizeof(ContainerItem*));
     if (!container->items)
     {
         free(container);
         return NULL;
     }
 
-    container->capacity = capacity;
     container->size = 0;
 
     return container;
+}
+
+static void resize_container(Container* container, size_t capacity)
+{
+    container->items = (ContainerItem**) realloc(container->items, capacity * sizeof(ContainerItem*));
+    container->capacity = capacity;
+    if (container->size > capacity)
+    {
+        container->size = capacity;
+    }
+}
+
+static void delete_item(ContainerItem* item)
+{
+    if (item->ptr)
+    {
+        free(item->ptr);
+    }
+
+    free(item);
+}
+
+void delete_container(Container* container)
+{
+    for (size_t i = 0; i < container->size; i++)
+    {
+        if ((container->items)[i])
+        {
+            free((container->items)[i]);
+        }
+    }
+
+    free(container->items);
+    free(container);
 }
 
 static ContainerItem* create_item(void* ptr, const Type type)
